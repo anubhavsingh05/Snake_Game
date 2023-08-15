@@ -1,4 +1,9 @@
 
+import biteApple from '../assets/BiteSound2.wav'
+import jungleSounds from '../assets/jungleSounds2.mp3'
+
+
+import { PiSpeakerSimpleSlashBold, PiSpeakerSimpleHighBold } from "react-icons/pi";
 
 import {useInterval} from './useInterval'
 import {useState, useEffect, useRef} from 'react'
@@ -18,6 +23,21 @@ function App() {
 
   const [GameStart, setGameStart] = useState(false)
   const [Score, setScore] = useState(0)
+  const appleSound = new Audio(biteApple)
+  const [isBBGMIplaying, setBBGMIplaying] = useState(false);
+  const bgMusic = useRef(new Audio(jungleSounds));
+  bgMusic.current.loop = true
+  bgMusic.current.volume = 0.4
+
+
+  const toggleBackgroundMusic = () => {
+    if (isBBGMIplaying) {
+      bgMusic.current.pause();
+    } else {
+      bgMusic.current.play();
+    }
+    setBBGMIplaying(prev => !prev);
+  };
   
 
   const StartGame = () => {
@@ -59,9 +79,9 @@ function App() {
 
   const isColliding = (head, body = Snake) => {
     const wallCollide = head[0]*SCALE >= CANVAS_SIZE[0] ||
-                        head[0] <= 0 ||
+                        head[0] <= -1 ||
                         head[1]*SCALE >= CANVAS_SIZE[1] ||
-                        head[1] <= 0
+                        head[1] <= -1
     if (wallCollide) {
      return true
     }
@@ -101,8 +121,9 @@ const appleCollision = (newSnake:number[][]) => {
 
       snakeCopy.unshift(newSnakeHead)
       
-      if(!appleCollision(snakeCopy)) snakeCopy.pop();
-      
+      if(!appleCollision(snakeCopy)) snakeCopy.pop()
+      else appleSound.play();
+
       setSnake(snakeCopy)
   }
 
@@ -116,7 +137,7 @@ const appleCollision = (newSnake:number[][]) => {
     const canvasContext = canvasRef.current?.getContext("2d")  
     canvasContext?.setTransform(SCALE,0,0,SCALE,0,0)
     canvasContext?.clearRect(0,0,CANVAS_SIZE[0],CANVAS_SIZE[1])
-
+ 
     canvasContext!.fillStyle = "white"
     Snake.forEach(([x,y]) => canvasContext?.fillRect(x,y,1,1))
 
@@ -159,9 +180,13 @@ const appleCollision = (newSnake:number[][]) => {
         GameOver &&
         <div className='text-white w-screen h-screen absolute top-0 flex flex-col justify-center items-center bg-cover bg-blend-darken bg-black bg-opacity-60'
         style={{
-          backgroundImage: `url("https://e0.pxfuel.com/wallpapers/95/277/desktop-wallpaper-dark-forest-background-forest-drawing.jpg")`
+          backgroundImage: `url("https://e0.pxfuel.com/wallpapers/95/277/desktop-wallpaper-dark-forest-background-forest-drawing.jpg")`,
         }}>
-          <div className={`flex flex-col bg-transparent px-96 py-40 relative`}>
+          <div className={`flex flex-col bg-transparent px-6 relative scale-125`}>
+          <button className=" px-12 mt-2 py-1 font-bold text-2xl absolute right-[-30%] top-[-10%]"
+                    onClick={toggleBackgroundMusic}>
+              {isBBGMIplaying ? <PiSpeakerSimpleSlashBold/> : <PiSpeakerSimpleHighBold/>}
+            </button>
               <p className='font-bold text-4xl'>
                 Game Over
               </p>
@@ -187,6 +212,14 @@ const appleCollision = (newSnake:number[][]) => {
           style={{
             backgroundImage: `url("https://e0.pxfuel.com/wallpapers/95/277/desktop-wallpaper-dark-forest-background-forest-drawing.jpg")`
           }}>
+
+
+        <div className={`flex flex-col items-center relative`}>
+           
+            <button className=" px-12 mt-2 py-1 font-bold text-2xl absolute right-[-30%] top-[-10%]"
+                    onClick={toggleBackgroundMusic}>
+              {isBBGMIplaying ? <PiSpeakerSimpleSlashBold/> : <PiSpeakerSimpleHighBold/>}
+            </button>
             <p className='text-5xl'>
               APPLES AND
             </p>
@@ -197,6 +230,8 @@ const appleCollision = (newSnake:number[][]) => {
                     onClick={StartGame}>
               Start The Game
             </button>
+
+        </div>
         </div>
       }
     </>
@@ -209,3 +244,5 @@ export default App
 {/* <button onClick={StartGame}>
 Start Game
 </button> */}
+
+{/* {isBBGMIplaying ? 'Pause Music' : 'Play Music'} */}
