@@ -15,6 +15,9 @@ function App() {
   const [Speed, setSpeed] = useState(SPEED)
   const [Dir, setDir] = useState([0,-1])
   const [GameOver, setGameOver] = useState(false)
+
+  const [GameStart, setGameStart] = useState(false)
+  const [Score, setScore] = useState(0)
   
 
   const StartGame = () => {
@@ -23,6 +26,8 @@ function App() {
        setApple(APPLE_START)
        setDir([0,-1])
        setGameOver(false)
+       setGameStart(true)
+       setScore(0)
 
        if (buttonRef.current) {
         buttonRef.current.focus();
@@ -30,8 +35,8 @@ function App() {
   }
 
   const EndGame = () => {
-       setSpeed(0)
-       setGameOver(true)
+      setSpeed(0)
+      setGameOver(true)
   }
 
   const moveSnake = ({keyCode}: React.KeyboardEvent) => {
@@ -79,7 +84,8 @@ const appleCollision = (newSnake:number[][]) => {
     while(isColliding(newApple, newSnake)){
       newApple = Apple.map((_,i)=> Math.floor(Math.random()*CANVAS_SIZE[i]/SCALE))
     }
-
+    
+    setScore(p => p+1)
     setApple(newApple)
     setSpeed(prev => prev + 100)
     return true
@@ -100,12 +106,7 @@ const appleCollision = (newSnake:number[][]) => {
       setSnake(snakeCopy)
   }
 
-
-
-
-  useInterval(GameLoop, Speed)
-
-  
+  useInterval(GameLoop)
   
   useEffect(()=>{
     GameLoop()
@@ -116,11 +117,18 @@ const appleCollision = (newSnake:number[][]) => {
     canvasContext?.setTransform(SCALE,0,0,SCALE,0,0)
     canvasContext?.clearRect(0,0,CANVAS_SIZE[0],CANVAS_SIZE[1])
 
-    canvasContext!.fillStyle = "pink"
+    canvasContext!.fillStyle = "white"
     Snake.forEach(([x,y]) => canvasContext?.fillRect(x,y,1,1))
 
-    canvasContext!.fillStyle = "white"
-    canvasContext?.fillRect(Apple[0], Apple[1], 1,1)
+    // canvasContext!.fillStyle = "red"
+    // canvasContext?.fillRect(Apple[0], Apple[1], 1,1)
+
+    canvasContext?.beginPath();
+    canvasContext?.arc(Apple[0] + 0.5, Apple[1] + 0.5, 0.5, 0, Math.PI * 2);
+    canvasContext!.fillStyle = "red";
+    canvasContext?.fill();
+    canvasContext?.closePath();
+
 
   },[Apple, Snake, GameOver])
    
@@ -131,31 +139,73 @@ const appleCollision = (newSnake:number[][]) => {
   return (
 
     <>
-      <button  className={``} 
+      <button  className={`bg-red-500 w-screen h-screen flex justify-center bg-cover py-10`} 
             role='button' 
             tabIndex={0} 
+            style={{
+              backgroundImage: `url("https://e0.pxfuel.com/wallpapers/95/277/desktop-wallpaper-dark-forest-background-forest-drawing.jpg")`
+            }}
             onKeyDown={e => moveSnake(e)}
             autoFocus
             ref={buttonRef}>
             
-            <canvas className={`border-2 border-white bg-gray-600`}
+            <canvas className={`border-2 border-black bg-black bg-opacity-60 rounded-3xl`}
                     width={`${CANVAS_SIZE[0]}px`}
                     height={`${CANVAS_SIZE[1]}px`}
                     ref={canvasRef}/>
+      </button>
 
-            {
-              GameOver &&
-              <div className='bg-white text-black'>
+      {
+        GameOver &&
+        <div className='text-white w-screen h-screen absolute top-0 flex flex-col justify-center items-center bg-cover bg-blend-darken bg-black bg-opacity-60'
+        style={{
+          backgroundImage: `url("https://e0.pxfuel.com/wallpapers/95/277/desktop-wallpaper-dark-forest-background-forest-drawing.jpg")`
+        }}>
+          <div className={`flex flex-col bg-transparent px-96 py-40 relative`}>
+              <p className='font-bold text-4xl'>
                 Game Over
+              </p>
+              <button className='bg-white text-black px-12 mt-2 py-1 font-bold text-lg'
+                      onClick={StartGame}>
+                Start Again
+              </button>
+              <div className={`flex justify-between`}>
+                <p className='text-3xl font-bold'>
+                  Score:
+                </p>
+                <p className='text-3xl font-bold'>
+                  {Score} 🍎
+                </p>
               </div>
-            }
-      </button>
+          </div>
+        </div>
+      }
 
-      <button onClick={StartGame}>
-        Start Game
-      </button>
+      {
+        !GameStart &&
+          <div className='text-white w-screen h-screen absolute top-0 flex flex-col justify-center items-center bg-cover bg-blend-darken bg-black bg-opacity-60'
+          style={{
+            backgroundImage: `url("https://e0.pxfuel.com/wallpapers/95/277/desktop-wallpaper-dark-forest-background-forest-drawing.jpg")`
+          }}>
+            <p className='text-5xl'>
+              APPLES AND
+            </p>
+            <p className='font-bold text-7xl'>
+              SNAKES
+            </p>
+            <button className='bg-white text-black px-20 mt-4 py-1 font-bold text-lg '
+                    onClick={StartGame}>
+              Start The Game
+            </button>
+        </div>
+      }
     </>
   )
 }
 
 export default App
+
+
+{/* <button onClick={StartGame}>
+Start Game
+</button> */}
