@@ -1,20 +1,14 @@
 
-import biteApple from '../assets/BiteSound2.wav'
-import jungleSounds from '../assets/jungleSounds2.mp3'
+import biteApple from '../assets/BiteSound.wav'
 
-
-import { PiSpeakerSimpleSlashBold, PiSpeakerSimpleHighBold } from "react-icons/pi";
-
-import {useInterval} from './useInterval'
-import {useState, useEffect, useRef} from 'react'
-import { CANVAS_SIZE, SCALE,APPLE_START,
-         SNAKE_START, SPEED, DIRECTIONS
-      } from './game_Constraints'
+import { useInterval } from './useInterval'
+import { useState, useEffect, useRef } from 'react'
+import { CANVAS_SIZE, SCALE,APPLE_START, SNAKE_START, SPEED, DIRECTIONS } from './game_Constraints'
 
 function App() {
 
   const canvasRef:React.RefObject<HTMLCanvasElement> = useRef(null)
-  const buttonRef = useRef(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const [Snake, setSnake] = useState(SNAKE_START)
   const [Apple, setApple] = useState(APPLE_START)
   const [Speed, setSpeed] = useState(SPEED)
@@ -24,20 +18,6 @@ function App() {
   const [GameStart, setGameStart] = useState(false)
   const [Score, setScore] = useState(0)
   const appleSound = new Audio(biteApple)
-  const [isBBGMIplaying, setBBGMIplaying] = useState(false);
-  const bgMusic = useRef(new Audio(jungleSounds));
-  bgMusic.current.loop = true
-  bgMusic.current.volume = 0.4
-
-
-  const toggleBackgroundMusic = () => {
-    if (isBBGMIplaying) {
-      bgMusic.current.pause();
-    } else {
-      bgMusic.current.play();
-    }
-    setBBGMIplaying(prev => !prev);
-  };
   
 
   const StartGame = () => {
@@ -77,7 +57,7 @@ function App() {
 
 
 
-  const isColliding = (head, body = Snake) => {
+  const isColliding = (head:number[], body = Snake) => {
     const wallCollide = head[0]*SCALE >= CANVAS_SIZE[0] ||
                         head[0] <= -1 ||
                         head[1]*SCALE >= CANVAS_SIZE[1] ||
@@ -93,7 +73,6 @@ function App() {
     }
 
     return false
-
 }
 
 
@@ -107,7 +86,7 @@ const appleCollision = (newSnake:number[][]) => {
     
     setScore(p => p+1)
     setApple(newApple)
-    setSpeed(prev => prev + 100)
+    setSpeed(prev => prev + 1)
     return true
   }
   return false
@@ -122,12 +101,12 @@ const appleCollision = (newSnake:number[][]) => {
       snakeCopy.unshift(newSnakeHead)
       
       if(!appleCollision(snakeCopy)) snakeCopy.pop()
-      else appleSound.play();
+      else appleSound.play()
 
       setSnake(snakeCopy)
   }
 
-  useInterval(GameLoop)
+  useInterval(GameLoop,Math.floor(Speed ? 2000/Speed : 100000))
   
   useEffect(()=>{
     GameLoop()
@@ -164,15 +143,15 @@ const appleCollision = (newSnake:number[][]) => {
             role='button' 
             tabIndex={0} 
             style={{
-              backgroundImage: `url("https://e0.pxfuel.com/wallpapers/95/277/desktop-wallpaper-dark-forest-background-forest-drawing.jpg")`
+              backgroundImage: `url("../assets/BackgroundImg.jpg")`
             }}
             onKeyDown={e => moveSnake(e)}
             autoFocus
             ref={buttonRef}>
             
             <canvas className={`border-2 border-black bg-black bg-opacity-60 rounded-3xl`}
-                    width={`${CANVAS_SIZE[0]}px`}
-                    height={`${CANVAS_SIZE[1]}px`}
+                    width={`${CANVAS_SIZE[0]+10}px`}
+                    height={`${CANVAS_SIZE[1]+10}px`}
                     ref={canvasRef}/>
       </button>
 
@@ -180,13 +159,9 @@ const appleCollision = (newSnake:number[][]) => {
         GameOver &&
         <div className='text-white w-screen h-screen absolute top-0 flex flex-col justify-center items-center bg-cover bg-blend-darken bg-black bg-opacity-60'
         style={{
-          backgroundImage: `url("https://e0.pxfuel.com/wallpapers/95/277/desktop-wallpaper-dark-forest-background-forest-drawing.jpg")`,
+          backgroundImage: `url("../assets/BackgroundImg.jpg")`,
         }}>
           <div className={`flex flex-col bg-transparent px-6 relative scale-125`}>
-          <button className=" px-12 mt-2 py-1 font-bold text-2xl absolute right-[-30%] top-[-10%]"
-                    onClick={toggleBackgroundMusic}>
-              {isBBGMIplaying ? <PiSpeakerSimpleSlashBold/> : <PiSpeakerSimpleHighBold/>}
-            </button>
               <p className='font-bold text-4xl'>
                 Game Over
               </p>
@@ -210,16 +185,11 @@ const appleCollision = (newSnake:number[][]) => {
         !GameStart &&
           <div className='text-white w-screen h-screen absolute top-0 flex flex-col justify-center items-center bg-cover bg-blend-darken bg-black bg-opacity-60'
           style={{
-            backgroundImage: `url("https://e0.pxfuel.com/wallpapers/95/277/desktop-wallpaper-dark-forest-background-forest-drawing.jpg")`
+            backgroundImage: `url("../assets/BackgroundImg.jpg")`
           }}>
 
 
         <div className={`flex flex-col items-center relative`}>
-           
-            <button className=" px-12 mt-2 py-1 font-bold text-2xl absolute right-[-30%] top-[-10%]"
-                    onClick={toggleBackgroundMusic}>
-              {isBBGMIplaying ? <PiSpeakerSimpleSlashBold/> : <PiSpeakerSimpleHighBold/>}
-            </button>
             <p className='text-5xl'>
               APPLES AND
             </p>
@@ -239,10 +209,3 @@ const appleCollision = (newSnake:number[][]) => {
 }
 
 export default App
-
-
-{/* <button onClick={StartGame}>
-Start Game
-</button> */}
-
-{/* {isBBGMIplaying ? 'Pause Music' : 'Play Music'} */}
