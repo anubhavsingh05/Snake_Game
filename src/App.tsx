@@ -1,5 +1,6 @@
 
 import biteApple from '../assets/BiteSound.wav'
+import BackgroundImg from '../assets/BackgroundImg.jpg'
 
 import { useInterval } from './useInterval'
 import { useState, useEffect, useRef } from 'react'
@@ -138,13 +139,13 @@ const appleCollision = (newSnake:number[][]) => {
 
   return (
 
-    <>
+    <div>
       <button  className={`bg-red-500 w-screen h-screen flex justify-center bg-cover py-10`} 
             role='button' 
             tabIndex={0} 
             style={{
-              backgroundImage: `url("../assets/BackgroundImg.jpg")`
-            }}
+            backgroundImage: `url(${BackgroundImg})`,
+          }}
             onKeyDown={e => moveSnake(e)}
             autoFocus
             ref={buttonRef}>
@@ -159,7 +160,7 @@ const appleCollision = (newSnake:number[][]) => {
         GameOver &&
         <div className='text-white w-screen h-screen absolute top-0 flex flex-col justify-center items-center bg-cover bg-blend-darken bg-black bg-opacity-60'
         style={{
-          backgroundImage: `url("../assets/BackgroundImg.jpg")`,
+          backgroundImage: `url(${BackgroundImg})`,
         }}>
           <div className={`flex flex-col bg-transparent px-6 relative scale-125`}>
               <p className='font-bold text-4xl'>
@@ -185,26 +186,24 @@ const appleCollision = (newSnake:number[][]) => {
         !GameStart &&
           <div className='text-white w-screen h-screen absolute top-0 flex flex-col justify-center items-center bg-cover bg-blend-darken bg-black bg-opacity-60'
           style={{
-            backgroundImage: `url("../assets/BackgroundImg.jpg")`
+            backgroundImage: `url(${BackgroundImg})`,
           }}>
+            <div className={`flex flex-col items-center relative`}>
+                <p className='text-5xl'>
+                  APPLES AND
+                </p>
+                <p className='font-bold text-7xl'>
+                  SNAKES
+                </p>
+                <button className='bg-white text-black px-20 mt-4 py-1 font-bold text-lg '
+                        onClick={StartGame}>
+                  Start The Game
+                </button>
 
-
-        <div className={`flex flex-col items-center relative`}>
-            <p className='text-5xl'>
-              APPLES AND
-            </p>
-            <p className='font-bold text-7xl'>
-              SNAKES
-            </p>
-            <button className='bg-white text-black px-20 mt-4 py-1 font-bold text-lg '
-                    onClick={StartGame}>
-              Start The Game
-            </button>
-
-        </div>
+            </div>
         </div>
       }
-    </>
+    </div>
   )
 }
 
