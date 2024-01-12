@@ -22,4 +22,4 @@ Run the development server:
 npm run dev
 ```
 
-The server will run on [http://localhost:3000](http://localhost:3000)
+The server will run on [http://localhost:5173](http://localhost:5173)
